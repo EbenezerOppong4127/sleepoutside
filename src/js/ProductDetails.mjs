@@ -43,7 +43,7 @@ export default class ProductDetails {
         const productId = document.getElementById('getProductId').value;
 
         // Retrieve the cart from localStorage (initialize as an empty array if not present)
-        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        let cart = JSON.parse(localStorage.getItem('so-cart')) || [];
 
         // Check if the product already exists in the cart
         const existingProductIndex = cart.findIndex(item => item.Id === productId);
@@ -61,7 +61,7 @@ export default class ProductDetails {
         }
 
         // Update the cart in localStorage
-        localStorage.setItem('cart', JSON.stringify(cart));
+        localStorage.setItem('so-cart', JSON.stringify(cart));
         // Confirm addition to cart
         alert('Product added to cart' );
       });

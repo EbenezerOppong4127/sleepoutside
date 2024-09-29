@@ -9,6 +9,28 @@
     <title>Sleep Outside | Cart</title>
 
     <link rel="stylesheet" href="/css/style.css" />
+    <style>
+      .hide {
+        display: none;
+      }
+      .cart {
+        position: relative;
+      }
+
+      .cart-count {
+        position: absolute;
+        top: 14px;  /* Adjust to position it above the backpack icon */
+        right: -10px; /* Adjust to position it over the right side of the icon */
+        background-color: #f04e4e;
+        color: white;
+        padding: 2px 6px;
+        border-radius: 50%;
+        font-size: 12px;
+        font-weight: bold;
+        line-height: 1;
+      }
+
+    </style>
 
     <script src="../js/cart.js" type="module"></script>
   </head>
@@ -50,6 +72,7 @@
             <!-- <text x="0" y="115" fill="#000000" font-size="5px" font-weight="bold" font-family="'Helvetica Neue', Helvetica, Arial-Unicode, Arial, Sans-serif">Created by Natalia Woodroffe</text>
             <text x="0" y="120" fill="#000000" font-size="5px" font-weight="bold" font-family="'Helvetica Neue', Helvetica, Arial-Unicode, Arial, Sans-serif">from the Noun Project</text> -->
           </svg>
+          <span class="cart-count" id="addProductCount"></span> <!-- This is the cart item count -->
         </a>
       </div>
     </header>
@@ -62,6 +85,13 @@
 
         </ul>
       </section>
+      <br>
+      <!-- Let Add this div to our cart.html -->
+      <div class="cart-footer hide" id="cartFooter" style="float: right;">
+        <p class="cart-total">Total: $<span id="cartTotalAmount">0.00</span></p>
+        <button id="emptyCartBtn" class="btn hide">Click Empty Cart</button>
+      </div>
+
     </main>
 
     <footer>&copy;NOT a real business</footer>
