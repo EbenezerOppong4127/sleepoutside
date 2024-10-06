@@ -1,4 +1,6 @@
-const baseURL = import.meta.env.VITE_SERVER_URL;
+let baseURL = import.meta.env.VITE_SERVER_URL;
+// If baseURL is empty, assign the fallback URL manually
+baseURL = baseURL ? baseURL : 'https://wdd330-backend.onrender.com/';
 function convertToJson(res) {
   if (res.ok) {
     return res.json();
