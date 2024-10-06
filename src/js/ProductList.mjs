@@ -1,54 +1,75 @@
-import {renderListWithTemplate} from './utils.mjs';
+import { renderListWithTemplate } from "./utils.mjs";
 
 function productCardTemplate(product) {
   return `<li class="product-card">
-  <a href="product_pages/index.html?product=${product.Id}">
-  <img
-    src="${product.Image}"
-    alt="Image of ${product.Name}"
-  />
-  <h3 class="card__brand">${product.Brand.Name}</h3>
-  <h2 class="card__name">${product.Name}</h2>
-  <p class="product-card__price">$${product.FinalPrice}</p></a>
-</li>`;
+    <a href="/product_pages/index.html?product=${product.Id}">
+    <img
+      src="${product.Images.PrimaryMedium}"
+      alt="Image of ${product.Name}"
+    />
+    <h3 class="card__brand">${product.Brand.Name}</h3>
+    <h2 class="card__name">${product.Name}</h2>
+    <p class="product-card__price">$${product.FinalPrice}</p></a>
+  </li>`;
 }
 
-class ProductListing {
+export default class ProductList {
   constructor(category, dataSource, listElement) {
     this.category = category;
     this.dataSource = dataSource;
     this.listElement = listElement;
+    this.products = []; // Store the fetched product list
   }
 
+  async init() {
+    const list = await this.dataSource.getData(this.category);
+    this.products = list; // Save the list to use in filtering and sorting
+    this.renderList(this.products);
+
+    // Set up the event listeners for search and sorting
+    this.initSearchAndSort();
+  }
+
+  // Render the product list
   renderList(list) {
     renderListWithTemplate(productCardTemplate, this.listElement, list);
   }
 
-  getUsedProductIds() {
-    return [
-      '880RR', // Marmot Ajax Tent - 3-Person, 3-Season
-      '985RF', // The North Face Talus Tent - 4-Person, 3-Season
-      '985PR', // The North Face Alpine Guide Tent - 3-Person, 4-Season
-      '344YJ'  // Cedar Ridge Rimrock Tent - 2-Person, 3-Season
-    ];
+  // Initialize search and sorting event listeners
+  initSearchAndSort() {
+    const searchForm = document.getElementById("search-form");
+    const sortSelect = document.getElementById("sort");
+
+    // Search functionality
+    searchForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const searchTerm = document.getElementById("search-input").value.toLowerCase();
+      this.handleSearch(searchTerm);
+    });
+
+    // Sorting functionality
+    sortSelect.addEventListener("change", (e) => {
+      const sortBy = e.target.value;
+      this.handleSort(sortBy);
+    });
   }
 
-  filterProduct(products) {
-    const usedProductIds = this.getUsedProductIds();
-    return products.filter(product => usedProductIds.includes(product.Id));
+  // Handle the search functionality
+  handleSearch(searchTerm) {
+    const filteredList = this.products.filter(product =>
+      product.Name.toLowerCase().includes(searchTerm)
+    );
+    this.renderList(filteredList);
   }
 
-
-  async init() {
-    // our dataSource will return a Promise...so we can use await to resolve it.
-    const list = await this.dataSource.getData();
-    // render the list - to be completed
-
-    const filteredProduct = this.filterProduct(list)
-
-    this.renderList(filteredProduct);
+  // Handle the sorting functionality
+  handleSort(sortBy) {
+    let sortedList = [...this.products];
+    if (sortBy === "name") {
+      sortedList.sort((a, b) => a.Name.localeCompare(b.Name));
+    } else if (sortBy === "price") {
+      sortedList.sort((a, b) => a.FinalPrice - b.FinalPrice);
+    }
+    this.renderList(sortedList);
   }
 }
-
-
-export default ProductListing;
