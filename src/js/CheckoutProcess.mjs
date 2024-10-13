@@ -2,6 +2,7 @@ import { getLocalStorage } from "./utils.mjs";
 import ExternalServices from "./ExternalServices.mjs";
 
 const services = new ExternalServices();
+
 function formDataToJSON(formElement) {
   const formData = new FormData(formElement),
     convertedJSON = {};
@@ -15,7 +16,6 @@ function formDataToJSON(formElement) {
 
 function packageItems(items) {
   const simplifiedItems = items.map((item) => {
-    console.log(item);
     return {
       id: item.Id,
       price: item.FinalPrice,
@@ -36,10 +36,12 @@ export default class CheckoutProcess {
     this.tax = 0;
     this.orderTotal = 0;
   }
+
   init() {
     this.list = getLocalStorage(this.key);
     this.calculateItemSummary();
   }
+
   calculateItemSummary() {
     const summaryElement = document.querySelector(
       this.outputSelector + " #cartTotal"
@@ -48,11 +50,12 @@ export default class CheckoutProcess {
       this.outputSelector + " #num-items"
     );
     itemNumElement.innerText = this.list.length;
-    // calculate the total of all the items in the cart
+
     const amounts = this.list.map((item) => item.FinalPrice);
     this.itemTotal = amounts.reduce((sum, item) => sum + item);
     summaryElement.innerText = "$" + this.itemTotal;
   }
+
   calculateOrdertotal() {
     this.shipping = 10 + (this.list.length - 1) * 2;
     this.tax = (this.itemTotal * 0.06).toFixed(2);
@@ -63,6 +66,7 @@ export default class CheckoutProcess {
     ).toFixed(2);
     this.displayOrderTotals();
   }
+
   displayOrderTotals() {
     const shipping = document.querySelector(this.outputSelector + " #shipping");
     const tax = document.querySelector(this.outputSelector + " #tax");
@@ -73,22 +77,29 @@ export default class CheckoutProcess {
     tax.innerText = "$" + this.tax;
     orderTotal.innerText = "$" + this.orderTotal;
   }
+
   async checkout() {
     const formElement = document.forms["checkout"];
-
     const json = formDataToJSON(formElement);
-    // add totals, and item details
     json.orderDate = new Date();
     json.orderTotal = this.orderTotal;
     json.tax = this.tax;
     json.shipping = this.shipping;
     json.items = packageItems(this.list);
-    console.log(json);
+
     try {
       const res = await services.checkout(json);
       console.log(res);
+
+      // Display success message
+      document.getElementById("success-message").innerText = "Checkout successful!";
+      document.getElementById("success-message").style.display = "block";
     } catch (err) {
-      console.log(err);
+      console.error(err);
+
+      // Display error message
+      document.getElementById("error-message").innerText = "Checkout failed. Please try again.";
+      document.getElementById("error-message").style.display = "block";
     }
   }
 }
